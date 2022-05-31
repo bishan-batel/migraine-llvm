@@ -1,0 +1,30 @@
+Module = {SOI ~ Function* ~ EOI} 
+Function = {"@" ~ Identifier ~ "{" ~ Statement* ~ "}" }
+
+// Statement Types
+Statement = _{OpNormal | Literal | OpPush | OpPop | OpHardPop | FunctionCall}
+
+// Standard operations
+OpNormal = {"<" | ">" | "." | ","  | "[" |"]" | "-" | "+"}
+
+// Stack operations
+OpPop = {"_"}
+OpHardPop = {"&"}
+OpPush = ${OpPushSymbol ~ Literal}
+OpPushSymbol = _{"^"}
+
+// Function Calls
+FunctionCall = @{"%" ~ Identifier}
+
+// literals
+Literal = _{"(" ~ (Integer | StringLiteral) ~ ")"} 
+StringLiteral = @{Quote ~ ((!Quote | EscapedChar) ~ ANY?)* ~ Quote}
+EscapedChar = {"\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")}
+
+// Building Blocks
+Integer = @{("-" | "+")? ~ ASCII_DIGIT+}
+Identifier= {(ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")*}
+Quote = _{"\""}
+
+COMMENT = _{ "#" ~ (!NEWLINE ~ ANY?)* ~ NEWLINE } 
+WHITESPACE = _{ (" " | "\t" | "\n" | "\r")+ }
